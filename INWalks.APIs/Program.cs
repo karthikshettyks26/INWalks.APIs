@@ -1,4 +1,5 @@
 using INWalks.API.Data;
+using INWalks.APIs.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,9 @@ builder.Services.AddSwaggerGen();
 
 //DB Connection
 builder.Services.AddDbContext<INWalksDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("INWalksConnectionString")));
+
+builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
+
 
 var app = builder.Build();
 
