@@ -17,7 +17,7 @@ builder.Services.AddDbContext<INWalksDbContext>(options => options.UseSqlServer(
 
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
-
+builder.Services.AddScoped<IWalkRepository, SQLWalkRepository>();
 
 var app = builder.Build();
 

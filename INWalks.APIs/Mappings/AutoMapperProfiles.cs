@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using INWalks.API.Models.DTO;
 using INWalks.APIs.Models.Domain;
+using INWalks.APIs.Models.DTO;
 
 namespace INWalks.APIs.Mappings
 {
@@ -15,6 +16,9 @@ namespace INWalks.APIs.Mappings
             CreateMap<Region, RegionDto>().ReverseMap();
             CreateMap<AddRegionRequestDto, Region>().ReverseMap();
             CreateMap<UpdateRegionRequestDto, Region>().ReverseMap();
+            CreateMap<AddWalkRequestDto, Walk>().ReverseMap();
+            CreateMap<WalkDto, Walk>().ReverseMap();
+            CreateMap<DifficultyDto, Difficulty>().ReverseMap();
         }
     }
 }
