@@ -3,6 +3,7 @@ using INWalks.API.Models.DTO;
 using INWalks.APIs.Models.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace INWalks.APIs.Controllers
 {
@@ -17,14 +18,13 @@ namespace INWalks.APIs.Controllers
             _dbContext = dbContext;
         }
 
-
         //GET ALL REGIONS
         //https://localhost:8080/api/Regions/GetAll
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
             //1.Get data from Database
-            var regions = _dbContext.Regions.ToList();
+            var regions = await _dbContext.Regions.ToListAsync();
 
             //2. Map Domain model to DTOs
             var regionsDto = new List<RegionDto>();
@@ -47,9 +47,9 @@ namespace INWalks.APIs.Controllers
         //GET SINGLE REGION BY ID
         [HttpGet]
         [Route("{id:Guid}")]
-        public IActionResult GetById([FromRoute] Guid id)
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var region = _dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var region = await _dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
 
             var regionDto = new RegionDto();
             if (region == null)
@@ -72,7 +72,7 @@ namespace INWalks.APIs.Controllers
         //CREATE REGION
         //https://localhost:8080/api/regions/Create
         [HttpPost]
-        public IActionResult Create([FromBody] AddRegionRequestDto addRegionRequestDto)
+        public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
 
             if (addRegionRequestDto == null)
@@ -87,8 +87,8 @@ namespace INWalks.APIs.Controllers
             };
 
             //Use Domain model to create region.
-            _dbContext.Regions.Add(regionDomainModel);
-            _dbContext.SaveChanges();
+           await _dbContext.Regions.AddAsync(regionDomainModel);
+           await _dbContext.SaveChangesAsync();
 
             var regionDto = new RegionDto()
             {
@@ -104,10 +104,10 @@ namespace INWalks.APIs.Controllers
 
         //UPDATE REGION
         [HttpPut("{id:Guid}")]
-        public IActionResult Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             //Load domain model
-            var region = _dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var region = await _dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
 
             if (region == null)
                 return NotFound();
@@ -116,7 +116,7 @@ namespace INWalks.APIs.Controllers
             region.Name = updateRegionRequestDto.Name;
             region.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
 
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             var regionDto = new RegionDto()
             {
@@ -132,16 +132,16 @@ namespace INWalks.APIs.Controllers
 
         //DELETE REGION
         [HttpDelete("{id:Guid}")]
-        public IActionResult Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var region = _dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var region = await _dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
 
             if (region == null)
                 return NotFound();
 
             //Delete from db
             _dbContext.Regions.Remove(region);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             var regionDto = new RegionDto()
             {
