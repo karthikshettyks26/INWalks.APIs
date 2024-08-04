@@ -17,8 +17,10 @@ namespace INWalks.APIs.Mappings
             CreateMap<AddRegionRequestDto, Region>().ReverseMap();
             CreateMap<UpdateRegionRequestDto, Region>().ReverseMap();
             CreateMap<AddWalkRequestDto, Walk>().ReverseMap();
+            CreateMap<UpdateWalkRequestDto, Walk>().ReverseMap();
             CreateMap<WalkDto, Walk>().ReverseMap();
             CreateMap<DifficultyDto, Difficulty>().ReverseMap();
+           
         }
     }
 }
