@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using INWalks.APIs.CustomActionFilters;
 using INWalks.APIs.Models.Domain;
 using INWalks.APIs.Models.DTO;
 using INWalks.APIs.Repositories;
@@ -19,29 +20,31 @@ namespace INWalks.APIs.Controllers
             this.mapper = mapper;
             this.walkRepository = walkRepository;
         }
-   
 
-        //CREATE WALKS
+
+        //CREATE WALKS 
         [HttpPost]
+        [ValidateModel]
+        //Checks model validation using data annotations.
         public async Task<IActionResult> CreateAsync([FromBody] AddWalkRequestDto addWalkRequestDto)
         {
-            if (ModelState.IsValid)
-            {
-                //Map Dto to domain model
-                var walk = mapper.Map<Walk>(addWalkRequestDto);
+            //if (ModelState.IsValid)
+            //{
+            //Map Dto to domain model
+            var walk = mapper.Map<Walk>(addWalkRequestDto);
 
-                //add to database
-                var walkDomainModel = await walkRepository.CreateAsync(walk);
+            //add to database
+            var walkDomainModel = await walkRepository.CreateAsync(walk);
 
-                //Map domain model to Dto
-                var walkDto = mapper.Map<WalkDto>(walkDomainModel);
+            //Map domain model to Dto
+            var walkDto = mapper.Map<WalkDto>(walkDomainModel);
 
-                //return CreatedAtAction(nameof(GetByIdAsync), new { id = walkDomainModel.Id }, walkDto);
-                return Ok(walkDto);
-            }
-            else
-                return BadRequest(ModelState);
-            
+            //return CreatedAtAction(nameof(GetByIdAsync), new { id = walkDomainModel.Id }, walkDto);
+            return Ok(walkDto);
+            //}
+            //else
+            //    return BadRequest(ModelState);
+
         }
 
         //GETALL Walks
@@ -66,7 +69,7 @@ namespace INWalks.APIs.Controllers
             //Load from Database
             var walkDomainModel = await walkRepository.GetByIdAsync(id);
 
-            if (walkDomainModel == null) 
+            if (walkDomainModel == null)
                 return NotFound();
 
             //Map domainmodel to Dto
@@ -77,24 +80,19 @@ namespace INWalks.APIs.Controllers
         //UPDATE WALK BY ID
         [HttpPut]
         [Route("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateWalkRequestDto updateWalkRequestDto)
         {
-            if (ModelState.IsValid)
-            {
-                //Map Dto to domain model
-                var walk = mapper.Map<Walk>(updateWalkRequestDto);
 
-                //Update the data
-                var walkDomainModel = await walkRepository.UpdateAsync(id, walk);
+            //Map Dto to domain model
+            var walk = mapper.Map<Walk>(updateWalkRequestDto);
 
-                //Map domain model to Dto
-                var walkDto = mapper.Map<WalkDto>(walk);
+            //Update the data
+            var walkDomainModel = await walkRepository.UpdateAsync(id, walk);
 
-                return Ok(walkDto);
-            }
-            else
-                return BadRequest(ModelState);
-           
+            //Map domain model to Dto
+            var walkDto = mapper.Map<WalkDto>(walk);
+            return Ok(walkDto);
         }
 
         //DELETE WALK BY ID
@@ -105,7 +103,7 @@ namespace INWalks.APIs.Controllers
             //Delete the record
             var walkDomainModel = await walkRepository.DeleteAsync(id);
 
-            if(walkDomainModel == null)
+            if (walkDomainModel == null)
                 return NotFound();
 
             //Map domain model to Dto

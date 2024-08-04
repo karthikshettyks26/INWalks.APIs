@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using INWalks.API.Data;
 using INWalks.API.Models.DTO;
+using INWalks.APIs.CustomActionFilters;
 using INWalks.APIs.Models.Domain;
 using INWalks.APIs.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -61,7 +62,7 @@ namespace INWalks.APIs.Controllers
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var region = await regionRepository.GetByIdAsync(id);
-            
+
             if (region == null)
                 return NotFound();
 
@@ -73,52 +74,41 @@ namespace INWalks.APIs.Controllers
         //CREATE REGION
         //https://localhost:8080/api/regions/Create
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
-
             if (addRegionRequestDto == null)
                 return BadRequest();
 
-            if (ModelState.IsValid)
-            {
-                //Create Domain model from Dto
-                var regionDomainModel = mapper.Map<Region>(addRegionRequestDto);
+            //Create Domain model from Dto
+            var regionDomainModel = mapper.Map<Region>(addRegionRequestDto);
 
-                //Use Domain model to create region.
-                await regionRepository.CreateAsync(regionDomainModel);
+            //Use Domain model to create region.
+            await regionRepository.CreateAsync(regionDomainModel);
 
-                //Map domain model to Dto
-                var regionDto = mapper.Map<RegionDto>(regionDomainModel);
+            //Map domain model to Dto
+            var regionDto = mapper.Map<RegionDto>(regionDomainModel);
 
-                return CreatedAtAction(nameof(GetById), new { id = regionDomainModel.Id }, regionDto);
-            }
-            else
-                return BadRequest(ModelState);
+            return CreatedAtAction(nameof(GetById), new { id = regionDomainModel.Id }, regionDto);
         }
 
         //UPDATE REGION
         [HttpPut("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
+            //Map DTO to domain model.
+            var region = mapper.Map<Region>(updateRegionRequestDto);
 
-            if (ModelState.IsValid)
-            {
-                //Map DTO to domain model.
-                var region = mapper.Map<Region>(updateRegionRequestDto);
+            //Check if region exists.
+            var regionDomainModel = await regionRepository.UpdateAsync(id, region);
 
-                //Check if region exists.
-                var regionDomainModel = await regionRepository.UpdateAsync(id, region);
+            if (regionDomainModel == null)
+                return NotFound();
 
-                if (regionDomainModel == null)
-                    return NotFound();
-
-                //Map domain model to DTO.
-                var regionDto = mapper.Map<RegionDto>(regionDomainModel);
-
-                return Ok(regionDto);
-            }
-            else
-                return BadRequest(ModelState);
+            //Map domain model to DTO.
+            var regionDto = mapper.Map<RegionDto>(regionDomainModel);
+            return Ok(regionDto);
         }
 
         //DELETE REGION
