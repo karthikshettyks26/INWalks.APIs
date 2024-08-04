@@ -30,10 +30,34 @@ namespace INWalks.APIs.Repositories
             return existingWalk;
         }
 
-        public async Task<List<Walk>> GetAllAsync()
+        //public async Task<List<Walk>> GetAllAsync()
+        //{
+        //    //Navigation Prop using Include
+        //    return await dbContext.Walks.Include("Difficulty").Include("Region").ToListAsync();
+        //}
+
+        public async Task<List<Walk>> GetAllAsync(string? filterOn = null, string? filterQuery = null)
         {
-            //Navigation Prop using Include
-            return await dbContext.Walks.Include("Difficulty").Include("Region").ToListAsync();
+            var walks =  dbContext.Walks.Include("Difficulty").Include("Region").AsQueryable();
+
+            //Add filters on Name, description and Length In Km
+            if(!string.IsNullOrWhiteSpace(filterOn) && !string.IsNullOrWhiteSpace(filterQuery))
+            {
+                if (filterOn.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = walks.Where(x => x.Name.Contains(filterQuery));
+                }
+                else if (filterOn.Equals("Description", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = walks.Where(x => x.Description.Contains(filterQuery));
+                }
+                else if (filterOn.Equals("LengthInKm", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = walks.Where(x => x.LengthInKm.Equals(filterQuery));
+                }
+            }
+
+            return await walks.ToListAsync();
         }
 
         public async Task<Walk?> GetByIdAsync(Guid id)

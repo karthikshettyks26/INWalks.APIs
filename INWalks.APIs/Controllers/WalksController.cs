@@ -26,7 +26,7 @@ namespace INWalks.APIs.Controllers
         [HttpPost]
         [ValidateModel]
         //Checks model validation using data annotations.
-        public async Task<IActionResult> CreateAsync([FromBody] AddWalkRequestDto addWalkRequestDto)
+        public async Task<IActionResult> Create([FromBody] AddWalkRequestDto addWalkRequestDto)
         {
             //if (ModelState.IsValid)
             //{
@@ -48,11 +48,12 @@ namespace INWalks.APIs.Controllers
         }
 
         //GETALL Walks
+        //api/Walks/GetAll?filterOn=Name&filterQuery=Track
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAll([FromQuery] string? filterOn, [FromQuery] string? filterQuery)
         {
             //Load from database
-            var walkDomainModelList = await walkRepository.GetAllAsync();
+            var walkDomainModelList = await walkRepository.GetAllAsync(filterOn, filterQuery);
 
             //Map domain model to Dto
             var listWalkDto = mapper.Map<List<WalkDto>>(walkDomainModelList);
@@ -64,7 +65,7 @@ namespace INWalks.APIs.Controllers
         //GET WALK BY ID
         [HttpGet]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> GetByIdAsync([FromRoute] Guid id)
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             //Load from Database
             var walkDomainModel = await walkRepository.GetByIdAsync(id);
@@ -81,7 +82,7 @@ namespace INWalks.APIs.Controllers
         [HttpPut]
         [Route("{id:Guid}")]
         [ValidateModel]
-        public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateWalkRequestDto updateWalkRequestDto)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateWalkRequestDto updateWalkRequestDto)
         {
 
             //Map Dto to domain model
@@ -98,7 +99,7 @@ namespace INWalks.APIs.Controllers
         //DELETE WALK BY ID
         [HttpDelete]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             //Delete the record
             var walkDomainModel = await walkRepository.DeleteAsync(id);
