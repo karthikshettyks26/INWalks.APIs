@@ -25,17 +25,23 @@ namespace INWalks.APIs.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] AddWalkRequestDto addWalkRequestDto)
         {
-            //Map Dto to domain model
-            var walk = mapper.Map<Walk>(addWalkRequestDto);
+            if (ModelState.IsValid)
+            {
+                //Map Dto to domain model
+                var walk = mapper.Map<Walk>(addWalkRequestDto);
 
-            //add to database
-            var walkDomainModel = await walkRepository.CreateAsync(walk);
+                //add to database
+                var walkDomainModel = await walkRepository.CreateAsync(walk);
 
-            //Map domain model to Dto
-            var walkDto = mapper.Map<WalkDto>(walkDomainModel);
+                //Map domain model to Dto
+                var walkDto = mapper.Map<WalkDto>(walkDomainModel);
 
-            //return CreatedAtAction(nameof(GetByIdAsync), new { id = walkDomainModel.Id }, walkDto);
-            return Ok(walkDto);
+                //return CreatedAtAction(nameof(GetByIdAsync), new { id = walkDomainModel.Id }, walkDto);
+                return Ok(walkDto);
+            }
+            else
+                return BadRequest(ModelState);
+            
         }
 
         //GETALL Walks
@@ -73,16 +79,22 @@ namespace INWalks.APIs.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateWalkRequestDto updateWalkRequestDto)
         {
-            //Map Dto to domain model
-            var walk = mapper.Map<Walk>(updateWalkRequestDto);
+            if (ModelState.IsValid)
+            {
+                //Map Dto to domain model
+                var walk = mapper.Map<Walk>(updateWalkRequestDto);
 
-            //Update the data
-            var walkDomainModel = await walkRepository.UpdateAsync(id, walk);
+                //Update the data
+                var walkDomainModel = await walkRepository.UpdateAsync(id, walk);
 
-            //Map domain model to Dto
-            var walkDto = mapper.Map<WalkDto>(walk);
+                //Map domain model to Dto
+                var walkDto = mapper.Map<WalkDto>(walk);
 
-            return Ok(walkDto);
+                return Ok(walkDto);
+            }
+            else
+                return BadRequest(ModelState);
+           
         }
 
         //DELETE WALK BY ID
