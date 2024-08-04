@@ -1,4 +1,5 @@
 using INWalks.API.Data;
+using INWalks.APIs.Data;
 using INWalks.APIs.Mappings;
 using INWalks.APIs.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,6 +18,9 @@ builder.Services.AddSwaggerGen();
 
 //DB Connection
 builder.Services.AddDbContext<INWalksDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("INWalksConnectionString")));
+
+//Auth Db Connection
+builder.Services.AddDbContext<INWalksAuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("InWalksAuthConnectionString")));
 
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
