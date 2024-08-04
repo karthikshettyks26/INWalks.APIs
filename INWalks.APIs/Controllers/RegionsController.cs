@@ -4,6 +4,7 @@ using INWalks.API.Models.DTO;
 using INWalks.APIs.CustomActionFilters;
 using INWalks.APIs.Models.Domain;
 using INWalks.APIs.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,10 +25,11 @@ namespace INWalks.APIs.Controllers
             this.regionRepository = regionRepository;
             this.mapper = mapper;
         }
-
+         
         //GET ALL REGIONS
         //https://localhost:8080/api/Regions/GetAll
         [HttpGet]
+        [Authorize(Roles ="Reader,Writer")]
         public async Task<IActionResult> GetAll()
         {
             //1.Get data from Database
@@ -59,6 +61,7 @@ namespace INWalks.APIs.Controllers
         //GET SINGLE REGION BY ID
         [HttpGet]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Reader,Writer")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var region = await regionRepository.GetByIdAsync(id);
@@ -75,6 +78,7 @@ namespace INWalks.APIs.Controllers
         //https://localhost:8080/api/regions/Create
         [HttpPost]
         [ValidateModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             if (addRegionRequestDto == null)
@@ -95,6 +99,7 @@ namespace INWalks.APIs.Controllers
         //UPDATE REGION
         [HttpPut("{id:Guid}")]
         [ValidateModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             //Map DTO to domain model.
@@ -113,6 +118,7 @@ namespace INWalks.APIs.Controllers
 
         //DELETE REGION
         [HttpDelete("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var regionDomainModel = await regionRepository.DeleteAsync(id);

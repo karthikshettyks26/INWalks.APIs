@@ -1,4 +1,5 @@
 ﻿using INWalks.APIs.Models.DTO;
+using INWalks.APIs.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace INWalks.APIs.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
+        private readonly ITokenRepository tokenRepository;
 
-        public AuthController(UserManager<IdentityUser> userManager)
+        public AuthController(UserManager<IdentityUser> userManager,ITokenRepository tokenRepository)
         {
             this.userManager = userManager;
+            this.tokenRepository = tokenRepository;
         }
 
 
@@ -43,6 +46,40 @@ namespace INWalks.APIs.Controllers
                 }
             }
             return BadRequest("Something went wrong");
+        }
+
+        [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto)
+        {
+
+            var user = await userManager.FindByEmailAsync(loginRequestDto.Username);
+
+            if(user != null)
+            {
+                var checkPassword = await userManager.CheckPasswordAsync(user, loginRequestDto.Password);
+                if (checkPassword)
+                {
+                    //get the roles
+                    var roles = await userManager.GetRolesAsync(user);
+
+                    if (roles != null) 
+                    {
+                        //create token
+                        var jwtToken = tokenRepository.CreateJwtToken(user, roles.ToList());
+
+                        //Map token to Dto.
+                        var response = new LoginResponseDto()
+                        {
+                            JwtToken = jwtToken
+                        };
+
+                        return Ok(response);
+                    }
+                }
+            }
+
+            return BadRequest("Username or password incorrect!");
         }
     }
 }
