@@ -9,10 +9,22 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+
+//Add Logging configuration using serilog.
+var logger = new LoggerConfiguration()
+    .WriteTo.Console().WriteTo.File("Logs/INWalks_Log.txt",rollingInterval: RollingInterval.Day)
+    .MinimumLevel.Information().
+    CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
+
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
@@ -110,7 +122,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-//To make application server static files like image.
+//To make application serves static files like image.
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images")),

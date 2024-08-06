@@ -18,12 +18,15 @@ namespace INWalks.APIs.Controllers
         private readonly INWalksDbContext _dbContext;
         private readonly IRegionRepository regionRepository;
         private readonly IMapper mapper;
+        private readonly ILogger<RegionsController> logger;
 
-        public RegionsController(INWalksDbContext dbContext, IRegionRepository regionRepository, IMapper mapper)
+        public RegionsController(INWalksDbContext dbContext, IRegionRepository regionRepository, IMapper mapper,
+            ILogger<RegionsController> logger)
         {
             _dbContext = dbContext;
             this.regionRepository = regionRepository;
             this.mapper = mapper;
+            this.logger = logger;
         }
          
         //GET ALL REGIONS
@@ -32,30 +35,38 @@ namespace INWalks.APIs.Controllers
         [Authorize(Roles ="Reader,Writer")]
         public async Task<IActionResult> GetAll()
         {
-            //1.Get data from Database
-            //var regions = await _dbContext.Regions.ToListAsync();
-            var regions = await regionRepository.GetAllAsync();
+            try
+            {
+                //1.Get data from Database
+                //var regions = await _dbContext.Regions.ToListAsync();
+                var regions = await regionRepository.GetAllAsync();
 
-            //2. Map Domain model to DTOs
-            #region old mapping
-            //var regionsDto = new List<RegionDto>();
-            //foreach (var region in regions)
-            //{
-            //    regionsDto.Add(new RegionDto()
-            //    {
-            //        Id = region.Id,
-            //        Code = region.Code,
-            //        Name = region.Name,
-            //        RegionImageUrl = region.RegionImageUrl
-            //    });
-            //}
-            #endregion
+                //2. Map Domain model to DTOs
+                #region old mapping
+                //var regionsDto = new List<RegionDto>();
+                //foreach (var region in regions)
+                //{
+                //    regionsDto.Add(new RegionDto()
+                //    {
+                //        Id = region.Id,
+                //        Code = region.Code,
+                //        Name = region.Name,
+                //        RegionImageUrl = region.RegionImageUrl
+                //    });
+                //}
+                #endregion
 
-            //Map domain model to DTO using automapper
-            var regionsDto = mapper.Map<List<RegionDto>>(regions);
+                //Map domain model to DTO using automapper
+                var regionsDto = mapper.Map<List<RegionDto>>(regions);
 
-            //3. Return the DTOs.
-            return Ok(regionsDto);
+                //3. Return the DTOs.
+                return Ok(regionsDto);
+            }
+            catch(Exception ex)
+            {
+                logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         //GET SINGLE REGION BY ID
