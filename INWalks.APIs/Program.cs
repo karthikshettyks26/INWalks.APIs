@@ -10,6 +10,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
 using Serilog;
+using INWalks.APIs.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -114,6 +115,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//custom middleware for exception handler
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 
