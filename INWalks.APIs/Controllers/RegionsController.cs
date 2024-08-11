@@ -32,7 +32,7 @@ namespace INWalks.APIs.Controllers
         //GET ALL REGIONS
         //https://localhost:8080/api/Regions/GetAll
         [HttpGet]
-        [Authorize(Roles ="Reader,Writer")]
+        //[Authorize(Roles ="Reader,Writer")]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -72,7 +72,7 @@ namespace INWalks.APIs.Controllers
         //GET SINGLE REGION BY ID
         [HttpGet]
         [Route("{id:Guid}")]
-        [Authorize(Roles = "Reader,Writer")]
+        //[Authorize(Roles = "Reader,Writer")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var region = await regionRepository.GetByIdAsync(id);
@@ -89,7 +89,7 @@ namespace INWalks.APIs.Controllers
         //https://localhost:8080/api/regions/Create
         [HttpPost]
         [ValidateModel]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             if (addRegionRequestDto == null)
@@ -110,7 +110,7 @@ namespace INWalks.APIs.Controllers
         //UPDATE REGION
         [HttpPut("{id:Guid}")]
         [ValidateModel]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             //Map DTO to domain model.
@@ -129,7 +129,7 @@ namespace INWalks.APIs.Controllers
 
         //DELETE REGION
         [HttpDelete("{id:Guid}")]
-        [Authorize(Roles = "Writer")]
+        //[Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var regionDomainModel = await regionRepository.DeleteAsync(id);

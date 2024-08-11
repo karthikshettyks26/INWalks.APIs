@@ -14,18 +14,13 @@ using INWalks.APIs.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-
 //Add Logging configuration using serilog.
 var logger = new LoggerConfiguration()
     .WriteTo.Console().WriteTo.File("Logs/INWalks_Log.txt",rollingInterval: RollingInterval.Day)
     .MinimumLevel.Information().
     CreateLogger();
-
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
-
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
@@ -69,6 +64,7 @@ builder.Services.AddDbContext<INWalksDbContext>(options => options.UseSqlServer(
 //Auth Db Connection
 builder.Services.AddDbContext<INWalksAuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("InWalksAuthConnectionString")));
 
+// Add services to the container.
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 builder.Services.AddScoped<IWalkRepository, SQLWalkRepository>();
